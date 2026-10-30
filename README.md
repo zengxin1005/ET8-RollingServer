@@ -48,7 +48,7 @@
 ## 🛠️ 技术栈 (Tech Stack)
 *   **框架**: ET8 (C# / .NET)
 *   **网络**: KCP / TCP / WebSocket
-*   **数据库**: MongoDB / MySQL (基于接口实现)
+*   **数据库**: MongoDB (基于接口实现)
 *   **架构**: Actor 模型 / 纤程 (Fiber) 单线程调度
 
 ---
