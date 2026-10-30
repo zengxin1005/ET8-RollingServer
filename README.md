@@ -58,3 +58,11 @@
 1. 克隆项目到本地
    ```bash
    git clone https://github.com/zengxin1005/ET8-RollingServer.git
+
+2. 确保本地已启动 MongoDB 服务（默认 127.0.0.1:27017）。
+
+3. 打开 ET8.RollingServer.sln 编译并启动服务端。
+
+4. 使用配套的客户端（或自定义客户端）进行连接测试。
+
+(详细配置请参考 Config/ 目录下的说明文档)
