@@ -52,13 +52,13 @@ namespace ET.Server
                 if (zoneStatus == null)
                 {
                     zoneStatus = scene.Root().AddChildWithId<ZoneStatus>(zone);
-                    zoneStatus.OpenTime = openTime;
+                    zoneStatus.OpenTime = openTime * 1000;
                     await dbComponent.Save(zoneStatus);
                     zoneStatus.Dispose();
                 }
                 else
                 {
-                    zoneStatus.OpenTime = openTime;
+                    zoneStatus.OpenTime = openTime * 1000;
                     await dbComponent.Save(zoneStatus);
                 }
             }
