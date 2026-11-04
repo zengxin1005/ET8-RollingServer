@@ -1,0 +1,12 @@
+# Rider
+.idea/
+
+# Visual Studio cache directory
+.vs/
+
+Bin/
+Logs/
+/**/[Bb]in/
+
+Publish/
+Server/Server.sln.DotSettings.user

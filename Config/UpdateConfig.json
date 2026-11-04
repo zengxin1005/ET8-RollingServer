@@ -1,0 +1,36 @@
+{
+  "AppVersionList": [
+    {
+      "Version": "1.0.0",
+      "IsForceUpdate": false,
+      "DownloadUrl": "",
+      "UpdateDesc": ""
+    },
+    {
+      "Version": "2.0.0",
+      "IsForceUpdate": true,
+      "DownloadUrl": "http://cdn.example.com/app/v2.0.0.apk",
+      "UpdateDesc": "发现新版本，请更新后进入游戏"
+    },
+    {
+      "Version": "2.0.1",
+      "IsForceUpdate": false,
+      "DownloadUrl": "http://cdn.example.com/app/v2.0.1.apk",
+      "UpdateDesc": "修复了一些已知问题"
+    }
+  ],
+  "ResourceList": [
+    {
+      "Version": 1,
+      "Size": 104857600,
+      "MD5": "abc123def456",
+      "DownloadUrl": "http://cdn.example.com/hotupdate/bundles_v1.zip"
+    },
+    {
+      "Version": 2,
+      "Size": 5242880,
+      "MD5": "789abc012def",
+      "DownloadUrl": "http://cdn.example.com/hotupdate/dll_v2.zip"
+    }
+  ]
+}

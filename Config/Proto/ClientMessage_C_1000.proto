@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package ET;
+
+// ResponseType NetClient2Main_Login
+message Main2NetClient_Login // IRequest
+{
+	int32 RpcId = 1;
+	int32 OwnerFiberId = 2;
+	string Account = 3;		// 账号
+	string Password = 4; 	// 密码
+	int32 ZoneId = 4;      // 选择的区服ID
+	string Platform = 5;   // 平台: iOS/Android/PC
+	string Channel = 6;    // 渠道: WeChat/QQ/AppStore
+	string SubChannel = 7; // 子渠道
+}
+
+message NetClient2Main_Login // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+
+	int64 PlayerId = 4;
+}
+
+
+
+// ResponseType NetClient2Main_GetServerList
+message Main2NetClient_GetServerList // IRequest
+{
+  int32 RpcId = 1;
+  int32 OwnerFiberId = 2;
+  string Account = 3;  // 帐号
+  string Platform = 4;   // 平台: iOS/Android/PC
+  string Channel = 5;    // 渠道: WeChat/QQ/AppStore
+  string SubChannel = 6; // 子渠道
+}
+
+
+message NetClient2Main_GetServerList // IResponse
+{
+  int32 RpcId = 1;
+  int32 Error = 2;
+  string Message = 3;
+  repeated ServerInfo ServerList = 4;
+  repeated UnitInfo UnitInfoList = 5;
+}
