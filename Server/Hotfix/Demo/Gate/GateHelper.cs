@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
-	public static partial class GateRealmStatusHelper
+	public static partial class GateHelper
 	{
         public static async ETTask Disconnect( Session session, bool skipSessionCheck = false)
         {
@@ -117,6 +117,63 @@ namespace ET.Server
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// 文本是否含敏感词（直查 FilterWord 表）。
+        /// ① 精确包含：命中即拒；
+        /// ② 按字序匹配：拦住"李x强""李 强"这类插字符绕过，同一字符位置不允许被重复消费
+        ///    （否则 李蕊 会被词 李蕊蕊 误伤）。
+        /// </summary>
+        public static bool HasFilterWord(string strRes)
+        {
+            if (string.IsNullOrEmpty(strRes))
+            {
+                return false;
+            }
+
+            List<FilterWord> filterWords = FilterWordCategory.Instance.DataList;
+            for (int i = 0; i < filterWords.Count; ++i)
+            {
+                string word = filterWords[i].Word;
+                if (string.IsNullOrEmpty(word))
+                {
+                    continue;
+                }
+
+                // ① 精确包含
+                if (strRes.Contains(word, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+
+                // 单字词：精确匹配已经覆盖，按字序没有额外信息
+                if (word.Length < 2)
+                {
+                    continue;
+                }
+
+                // ② 按字序匹配
+                int from = 0;
+                int matched = 0;
+                for (int j = 0; j < word.Length; ++j)
+                {
+                    int idx = strRes.IndexOf(word[j], from);
+                    if (idx < 0)
+                    {
+                        break;
+                    }
+                    from = idx + 1;
+                    ++matched;
+                }
+
+                if (matched == word.Length)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 	}
 }

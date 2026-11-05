@@ -40,14 +40,18 @@ namespace ET.Server
 
 			if (string.IsNullOrWhiteSpace(request.NickName)|| request.NickName.Length <2 || request.NickName.Length > 7 )
 			{
-				response.Error = ErrorCore.ERR_NickNameInvalid;
+				response.Error = ErrorCore.ERR_NickNamePoolEmpty;
 				response.Message = "昵称长度需为2~7个字符";
 				return;
 			}
 			
-			//todo  request.NickName 要校验是否包含敏感字 ,配置文件使用Excel 
-			
-			
+			// 昵称不能含敏感词（精确 + 按字序匹配，实现见 GateHelper.HasFilterWord）
+			if (GateHelper.HasFilterWord(request.NickName))
+			{
+				response.Error = ErrorCore.ERR_NickNamePoolEmpty;
+				response.Message = "昵称包含敏感词，请更换";
+				return;
+			}
 			
 			
 			using (await session.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Unit, player.Id))

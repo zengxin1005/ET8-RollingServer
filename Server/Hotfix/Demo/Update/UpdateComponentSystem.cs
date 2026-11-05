@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using System.Collections.Generic;
 namespace ET.Server
 {
@@ -7,69 +5,51 @@ namespace ET.Server
     [FriendOf(typeof(UpdateComponent))]
     public static partial class UpdateComponentSystem
     {
-        private const string ConfigPath = "../Config/UpdateConfig.json";
+        // 配置本体（整包版本列表 / 热更资源列表）不再自己读文件：
+        // 由 ConfigLoader 在 World 启动时按 [Config] 特性统一加载（Server/Model/Model/Entry.cs:50），
+        // 运行时直接取 AppVersionCategory.Instance / ResourceCategory.Instance 即可。
+        // 改 Excel → 导表 → 调 HttpReloadUpdateHandler 或 Console 的 C <ConfigName> 热重载。
 
         [EntitySystem]
         private static void Awake(this UpdateComponent self)
         {
-            LoadConfig(self);
-        }
-        
-        public static void LoadConfig(this UpdateComponent self)
-        {
-            if (!File.Exists(ConfigPath))
-            {
-                Log.Warning($"UpdateConfig.json not found at {ConfigPath}");
-                return;
-            }
-
-            try
-            {
-                //todo 配置文件改成使用Excel 
-                string json = File.ReadAllText(ConfigPath);
-                self.UpdateConfig = MongoHelper.FromJson<UpdateConfig>(json);
-                Log.Info("UpdateConfig loaded successfully");
-            }
-            catch (Exception e)
-            {
-                Log.Error($"Failed to load UpdateConfig: {e.Message}");
-            }
-           
         }
 
-        
         /// <summary>
         /// 从MongoDB加载所有区服状态和白名单到内存
         /// </summary>
         public static async ETTask LoadAllVersion(this UpdateComponent self)
         {
-            foreach (AppVersionItem  versionItem in self.UpdateConfig.AppVersionList)
+            foreach (AppVersion versionConfig in AppVersionCategory.Instance.DataList)
             {
-                await self.GetUpdateVersion(versionItem.Version);
+                await self.GetUpdateVersion(versionConfig.Version);
             }
-            foreach (ResourceItem  versionItem in self.UpdateConfig.ResourceList)
+            foreach (Resource versionConfig in ResourceCategory.Instance.DataList)
             {
-                await self.GetUpdateVersion(versionItem.Version.ToString());
+                await self.GetUpdateVersion(versionConfig.Version.ToString());
             }
         }
         
         private static async ETTask<UpdateVersion> GetUpdateVersion(this UpdateComponent self, string version)
         {
-            
-            //如果部署多个就不能缓存内存白名单，一般只部署一个
+            UpdateVersion updateVersion = null;
             long versionId = version.GetLongHashCode();
-            UpdateVersion updateVersion = self.GetChild<UpdateVersion>(versionId);
-            if (updateVersion != null)
+            using (await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Update, versionId))
             {
-                return updateVersion;
+                //如果部署多个就不能缓存内存白名单，一般只部署一个
+                updateVersion = self.GetChild<UpdateVersion>(versionId);
+                if (updateVersion != null)
+                {
+                    return updateVersion;
+                }
+                DBComponent dbComponent = self.Scene().GetComponent<DBManagerComponent>().GetZoneDB(self.Root().Zone());
+                updateVersion = await dbComponent.Query<UpdateVersion>(versionId);
+                if (updateVersion != null)
+                {
+                    self.AddChild(updateVersion);
+                }
             }
 
-            DBComponent dbComponent = self.Scene().GetComponent<DBManagerComponent>().GetZoneDB(self.Root().Zone());
-            updateVersion = await dbComponent.Query<UpdateVersion>(versionId);
-            if (updateVersion != null)
-            {
-                self.AddChild(updateVersion);
-            }
             return updateVersion;
         }
 
@@ -96,7 +76,7 @@ namespace ET.Server
         {
             UpdateVersion updateVersion = await self.GetUpdateVersion(version);
             HashSet<string> whitelistIPs = updateVersion?.WhitelistIPs;
-            return  whitelistIPs.Count == 0 || whitelistIPs.Contains(ip);
+            return whitelistIPs == null || whitelistIPs.Count == 0 || whitelistIPs.Contains(ip);
         }
 
  
@@ -118,7 +98,7 @@ namespace ET.Server
         public static async ETTask RemoveWhitelistIP(this UpdateComponent self, string version, string ip)
         {
             UpdateVersion updateVersion = await self.GetUpdateVersion(version);
-            if (updateVersion?.WhitelistIPs.Count == 0)
+            if (updateVersion == null || updateVersion.WhitelistIPs.Count == 0)
                 return; 
             updateVersion.WhitelistIPs.Remove(ip);
             DBComponent dbComponent = self.Scene().GetComponent<DBManagerComponent>().GetZoneDB(self.Root().Zone());
@@ -130,13 +110,13 @@ namespace ET.Server
         /// </summary>
         public static async ETTask ClearAllWhitelist(this UpdateComponent self)
         {
-            foreach (AppVersionItem  versionItem in self.UpdateConfig.AppVersionList)
+            foreach (AppVersion versionConfig in AppVersionCategory.Instance.DataList)
             {
-                await self.ClearWhitelist(versionItem.Version);
+                await self.ClearWhitelist(versionConfig.Version);
             }
-            foreach (ResourceItem  versionItem in self.UpdateConfig.ResourceList)
+            foreach (Resource versionConfig in ResourceCategory.Instance.DataList)
             {
-                await self.ClearWhitelist(versionItem.Version.ToString());
+                await self.ClearWhitelist(versionConfig.Version.ToString());
             }
         }
         
@@ -147,7 +127,7 @@ namespace ET.Server
         public static async ETTask ClearWhitelist(this UpdateComponent self, string version)
         {
             UpdateVersion updateVersion = await self.GetUpdateVersion(version);
-            if (updateVersion?.WhitelistIPs.Count == 0)
+            if (updateVersion == null || updateVersion.WhitelistIPs.Count == 0)
                 return; 
             updateVersion.WhitelistIPs.Clear();
             DBComponent dbComponent = self.Scene().GetComponent<DBManagerComponent>().GetZoneDB(self.Root().Zone());

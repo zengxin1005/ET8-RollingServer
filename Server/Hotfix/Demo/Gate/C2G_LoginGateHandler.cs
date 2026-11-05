@@ -41,7 +41,7 @@ namespace ET.Server
                 return;
             }
             
-            if (!await GateRealmStatusHelper.CheckAccountAndZoneStatus(session, account, zoneId, response))
+            if (!await GateHelper.CheckAccountAndZoneStatus(session, account, zoneId, response))
             {
                 return;
             }
@@ -88,7 +88,7 @@ namespace ET.Server
                             G2C_KickOut g2CKickOut = G2C_KickOut.Create();
                             g2CKickOut.Reason = 0;
                             playerSessionComponent.Session?.Send(g2CKickOut);
-                            GateRealmStatusHelper.Disconnect(playerSessionComponent.Session).Coroutine();
+                            GateHelper.Disconnect(playerSessionComponent.Session).Coroutine();
                             sessionPlayerComponent = session.GetComponent<SessionPlayerComponent>()
                                     ?? session.AddComponent<SessionPlayerComponent>();
                             sessionPlayerComponent.Player = player;

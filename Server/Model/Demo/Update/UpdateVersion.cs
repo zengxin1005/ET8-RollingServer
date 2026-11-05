@@ -12,7 +12,7 @@ namespace ET.Server
         /// <summary>
         /// 资源版本白名单
         /// </summary>
-        public HashSet<string> WhitelistIPs { get; } = new();
+        public HashSet<string> WhitelistIPs { get; set; } = new();
 
     }
 }

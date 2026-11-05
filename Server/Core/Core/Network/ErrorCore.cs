@@ -64,7 +64,7 @@
         public const int ERR_ZonePlayerFrozen = 110511;
         public const int ERR_SessionAccountMismatch = 110512;
         public const int ERR_UnitAlreadyExists = 110513;
-        public const int ERR_NickNameInvalid = 110514;
+        public const int ERR_NickNamePoolEmpty = 110514;
         public const int ERR_NickNameDuplicate = 110515;
         public const int ERR_SessionReplaced = 110516;
         public const int ERR_ZoneNotOpen = 110517;

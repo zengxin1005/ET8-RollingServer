@@ -16,10 +16,9 @@ namespace ET.Server
         {
             UpdateComponent updateComponent = scene.GetComponent<UpdateComponent>();
 
-            // 响应：直接复用UpdateConfig结构，但只填充一个AppVersionItem
+            // 响应：复用响应结构，只填充一个版本
             HttpGetUpdateResponse response =  HttpGetUpdateResponse.Create();
 
-            UpdateConfig updateConfig = updateComponent.UpdateConfig;
             string platform = context.Request.QueryString["platform"] ?? "";;
             string channel = context.Request.QueryString["channel"] ?? "";;
             string subChannel = context.Request.QueryString["subChannel"] ?? "";;
@@ -56,15 +55,15 @@ namespace ET.Server
                 ip = context.Request.RemoteEndPoint.Address.ToString();
             }
 
-            // 从AppVersionList中找到客户端版本之后的版本
+            // 从AppVersion列表（Excel: UpdateConfig.xlsx@AppVersion）中找到客户端版本之后的版本
             // 规则：
             //   1. 如果后面的版本都是非强更，找到最高版本下发（可选更新）
             //   2. 如果后面有强更版本，找到最高的强更版本下发（必须先强更）
-            AppVersionItem matchedItem = null;
-            AppVersionItem highestForceItem = null;
-            AppVersionItem highestItem = null;
+    
+            AppVersion highestForceItem = null;
+            AppVersion highestItem = null;
 
-            foreach (AppVersionItem item in updateConfig.AppVersionList)
+            foreach (AppVersion item in AppVersionCategory.Instance.DataList)
             {
                 if (CompareVersion(appVersion, item.Version) >= 0)
                     continue;
@@ -92,22 +91,13 @@ namespace ET.Server
             }
 
             // 有强更版本 → 下发最高强更版本；否则下发最高版本
-            matchedItem = highestForceItem ?? highestItem;
-
-            if (matchedItem != null)
-            {
-                response.AppVersion.Version = matchedItem.Version;
-                response.AppVersion.IsForceUpdate = matchedItem.IsForceUpdate;
-                response.AppVersion.DownloadUrl = matchedItem.DownloadUrl;
-                response.AppVersion.UpdateDesc = matchedItem.UpdateDesc;
-            }
-
+            response.AppVersion = highestForceItem ?? highestItem;
             
             int resVersion = 0;
             int.TryParse(context.Request.QueryString["resVersion"], out resVersion);
-            foreach (ResourceItem item in updateConfig.ResourceList)
+            foreach (Resource item in ResourceCategory.Instance.DataList)
             {
-                if(resVersion > item.Version)
+                if(resVersion >= item.Version)
                     continue;
                 // 该资源版本在白名单控制中，且客户端IP不在白名单 → 跳过
                 if (!await updateComponent.IsIPWhitelisted(item.Version.ToString(), ip))

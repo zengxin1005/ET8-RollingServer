@@ -28,7 +28,7 @@ namespace ET.Server
 					g2CKickOut.Reason = 1;
 					g2CKickOut.EndTime = request.EndTime;
 					session?.Send(g2CKickOut);
-					GateRealmStatusHelper.Disconnect(session,true).Coroutine();
+					GateHelper.Disconnect(session,true).Coroutine();
 				}
 			}
 			else
@@ -42,7 +42,7 @@ namespace ET.Server
 					g2CKickOut.Reason = 2;
 					g2CKickOut.EndTime = request.EndTime;
 					session?.Send(g2CKickOut);
-					GateRealmStatusHelper.Disconnect(session,true).Coroutine();
+					GateHelper.Disconnect(session,true).Coroutine();
 				}
 			}
 			await ETTask.CompletedTask;

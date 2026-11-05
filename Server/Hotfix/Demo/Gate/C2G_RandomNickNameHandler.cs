@@ -5,21 +5,13 @@
 	{
 		protected override async ETTask Run(Session session, C2G_RandomNickName request, G2C_RandomNickName response)
 		{
-			//todo 配置文件改成使用Excel读取
-			char[] Letters =
+			if (!NickNameRandomPool.Instance.TryRandom(request.Sex, out string nickName))
 			{
-				'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-				'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-			};
-			int length = RandomGenerator.RandomNumber(4, 9); // [4, 9) ⇒ 4~8 个字母
-			System.Text.StringBuilder sb = new(length);
-			for (int i = 0; i < length; i++)
-			{
-				sb.Append(RandomGenerator.RandomArray(Letters));
+				response.Error = ErrorCore.ERR_NickNamePoolEmpty;
+				response.Message = "当前性别暂无可用随机昵称，请手动输入";
+				return;
 			}
-
-			response.NickName = sb.ToString();
-			
+			response.NickName = nickName;
 			await ETTask.CompletedTask;
 		}
 	}

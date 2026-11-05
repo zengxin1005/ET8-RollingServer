@@ -13,6 +13,7 @@ namespace ET
         public const int Account = 8;
         public const int Zone = 9;
         public const int Unit = 10;
+        public const int Update = 11;                   // 更新服加载/创建 UpdateVersion 时使用
         public const int Max = 100; // 这个必须最大
     }
 }

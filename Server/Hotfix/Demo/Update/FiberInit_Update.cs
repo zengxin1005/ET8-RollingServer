@@ -11,6 +11,7 @@ namespace ET.Server
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get((int)root.Id);
             root.AddComponent<HttpComponent, string>($"http://*:{startSceneConfig.Port}/");
             root.AddComponent<DBManagerComponent>();
+            root.AddComponent<CoroutineLockComponent>();
             UpdateComponent updateComponent = root.AddComponent<UpdateComponent>();
             await updateComponent.LoadAllVersion();
             await ETTask.CompletedTask;

@@ -8,12 +8,12 @@ namespace ET.Server
         /// <summary>
         /// APP版本
         /// </summary>
-        public AppVersionItem AppVersion { get;} = new();
+        public AppVersion AppVersion { get; set; }
 
         /// <summary>
         /// 资源包列表
         /// </summary>
-        public List<ResourceItem> ResourceList { get; } = new();
+        public List<Resource> ResourceList { get; private set; } = new();
 
         
         public static HttpGetUpdateResponse Create(bool isFromPool = false)
