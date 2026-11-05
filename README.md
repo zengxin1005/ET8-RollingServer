@@ -43,12 +43,12 @@
 ## 运营/运维接口: Realm/Admin  Update/Admin
 
 
-* **Realm**:账号校验/状态校验，服务器状态校验，登录，SDK校验，选服，拉服务器(服务器配置规则直接去ZoneConfig)等
-* **Gate**:登录绑定连接，顶号处理，创角，临界状态验证，进入地图，下线逻辑，消息转发等
-* **Update**: 所有热更新逻辑，只支持补丁包模式，同时支持资源包跟安装包，H5单文件热更新模式请结合清单文件直接使用对象存储
+* **Realm**:账号校验/状态校验，服务器状态校验，登录，SDK校验，选服，服务器拉取(服务器配置规则直接取ZoneConfig)等。
+* **Gate**:登录绑定连接，顶号处理，创角，临界状态验证，进入地图，下线逻辑，消息转发等。
+* **Update**: 所有热更新逻辑，只支持补丁包模式，同时支持资源包跟安装包，H5单文件热更新模式请结合清单文件直接使用对象存储。
 * **Notice**: 公告系统，支持自定义Excel表格配置，支持H5页面配置。
 
-## 未来有时间我会把客户端配套代码全部Push。
+## 未来有时间我会把相应客户端配套代码全部Push。
 
 
 ## 💡 设计理念 (Philosophy)
@@ -61,9 +61,9 @@
 
 鸣谢：
 
-https://github.com/Alex-Rachel/GameNetty.git  感谢Alex-Rachel对ET8进行了前后端分离， 本项目也是基于其main分支
+https://github.com/Alex-Rachel/GameNetty.git  感谢Alex-Rachel对ET8进行了前后端分离， 本项目也是基于其main分支。
 
-https://github.com/egametang/ET   感谢熊猫大大开源的ET框架
+https://github.com/egametang/ET   感谢熊猫大大开源的ET框架。
 
 
 相关ET文档请查阅这两个开源项目。
