@@ -37,6 +37,13 @@ namespace ET.Server
             //     unitInfo.KV.Add(key, value);
             // }
 
+            unitInfo.UnitId = unit.Id;
+            unitInfo.Avatar = unit.Avatar;
+            unitInfo.Level = unit.Level;
+            unitInfo.NickName = unit.NickName;
+            unitInfo.ZoneId = unit.ZoneId;
+            unitInfo.LastLoginTime = unit.LastLoginTime;
+            unitInfo.Sex = unit.Sex;
             return unitInfo;
         }
         

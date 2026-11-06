@@ -21,6 +21,7 @@ namespace ET.Server
             root.AddComponent<NetWSComponent, IEnumerable<string>>(new[]{$"http://*:{startSceneConfig.Port}/"});
 #endif
             root.AddComponent<DBManagerComponent>();      
+            root.AddComponent<ZoneLoadComponent>();
             root.AddComponent<HttpComponent, string>($"http://*:{startSceneConfig.Port}/");
             await ETTask.CompletedTask;
         }

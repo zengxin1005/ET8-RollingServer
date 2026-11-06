@@ -698,6 +698,98 @@ namespace ET
     }
 
     [MemoryPackable]
+    [Message(InnerMessage.R2G_GetZoneLoad)]
+    [ResponseType(nameof(G2R_GetZoneLoad))]
+    public partial class R2G_GetZoneLoad : MessageObject, IRequest
+    {
+        public static R2G_GetZoneLoad Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(R2G_GetZoneLoad), isFromPool) as R2G_GetZoneLoad;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(InnerMessage.ZoneOnlineCount)]
+    public partial class ZoneOnlineCount : MessageObject
+    {
+        public static ZoneOnlineCount Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(ZoneOnlineCount), isFromPool) as ZoneOnlineCount;
+        }
+
+        [MemoryPackOrder(0)]
+        public int ZoneId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Count { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.ZoneId = default;
+            this.Count = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(InnerMessage.G2R_GetZoneLoad)]
+    public partial class G2R_GetZoneLoad : MessageObject, IResponse
+    {
+        public static G2R_GetZoneLoad Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(G2R_GetZoneLoad), isFromPool) as G2R_GetZoneLoad;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        [MemoryPackOrder(3)]
+        public List<ZoneOnlineCount> Zones { get; set; } = new();
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.Zones.Clear();
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
     [Message(InnerMessage.G2M_SessionDisconnect)]
     public partial class G2M_SessionDisconnect : MessageObject, ILocationMessage
     {
@@ -852,9 +944,12 @@ namespace ET
         public const ushort R2G_GetLoginKey = 20019;
         public const ushort G2R_GetLoginKey = 20020;
         public const ushort R2G_KickOutPlayer = 20021;
-        public const ushort G2M_SessionDisconnect = 20022;
-        public const ushort ObjectQueryResponse = 20023;
-        public const ushort M2M_UnitTransferRequest = 20024;
-        public const ushort M2M_UnitTransferResponse = 20025;
+        public const ushort R2G_GetZoneLoad = 20022;
+        public const ushort ZoneOnlineCount = 20023;
+        public const ushort G2R_GetZoneLoad = 20024;
+        public const ushort G2M_SessionDisconnect = 20025;
+        public const ushort ObjectQueryResponse = 20026;
+        public const ushort M2M_UnitTransferRequest = 20027;
+        public const ushort M2M_UnitTransferResponse = 20028;
     }
 }

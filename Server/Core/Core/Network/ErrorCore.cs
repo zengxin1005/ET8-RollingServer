@@ -68,6 +68,7 @@
         public const int ERR_NickNameDuplicate = 110515;
         public const int ERR_SessionReplaced = 110516;
         public const int ERR_ZoneNotOpen = 110517;
+        public const int ERR_ZonePlayerFull = 110518;
         public const int ERR_KcpRouterSame = 110403;
         public const int ERR_KcpRouterConnectFail = 110404;
         public const int ERR_KcpRouterRouterSyncCountTooMuchTimes = 110405;

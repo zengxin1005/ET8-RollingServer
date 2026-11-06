@@ -157,7 +157,26 @@ message R2G_KickOutPlayer // IMessage
 }
 
 
+// ResponseType G2R_GetZoneLoad
+message R2G_GetZoneLoad // IRequest
+{
+    int32 RpcId = 1;
+}
 
+
+message ZoneOnlineCount
+{
+    int32 ZoneId = 1;
+    int32 Count = 2;
+}
+
+message G2R_GetZoneLoad // IResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
+    repeated ZoneOnlineCount Zones = 4;
+}
 
 message G2M_SessionDisconnect // ILocationMessage
 {

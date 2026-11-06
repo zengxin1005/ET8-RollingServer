@@ -13,10 +13,6 @@ namespace ET.Server
         /// </summary>
         public int Status { get; set; }
 
-        /// <summary>
-        /// 负载状态：0=流畅，1=繁忙，2=爆满
-        /// </summary>
-        public int Load { get; set; }  //todo  改成动态监控
         
         /// <summary>
         /// 是否新服

@@ -62,10 +62,21 @@ namespace ET.Server
 				// 1970 起点写成 8 点 = 按 UTC+8（北京时间）展示，玩家看到的才是本地钟
 				DateTime openDateTime = new DateTime(1970, 1, 1, 8, 0, 0, DateTimeKind.Utc).AddMilliseconds(zoneStatus.OpenTime);
 				response.Message = $"服务器将于 {openDateTime:yyyy-MM-dd HH:mm} 开启，暂时无法登录";
+				CloseSession(session).Coroutine();
 				return;
 			}
 			
-			// 4. 加载或创建账号信息
+			// 4. 人数上限校验：该 Zone 在线人数超过单服承载就不再放人进来
+			ZoneLoadComponent zoneStatusComponent = session.Root().GetComponent<ZoneLoadComponent>();
+			if (zoneStatusComponent != null && zoneStatusComponent.IsOverCapacity(zoneId))
+			{
+				response.Error = ErrorCore.ERR_ZonePlayerFull;
+				response.Message = "当前服务器人数已满，请稍后再试或选择其他服务器";
+				CloseSession(session).Coroutine();
+				return;
+			}
+			
+			// 5. 加载或创建账号信息
 			long accountId = request.Account.GetLongHashCode();
 			//如果相同库的话，多个Realm 相同账号注册同一时间有可能相互覆盖，概率很小，先不考虑
 			using (await session.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Account, accountId))
@@ -98,7 +109,7 @@ namespace ET.Server
 						return;
 					}
 
-					// 5. 账号状态校验
+					// 6. 账号状态校验
 					switch (accountInfo.Status)
 					{
 						case 1:

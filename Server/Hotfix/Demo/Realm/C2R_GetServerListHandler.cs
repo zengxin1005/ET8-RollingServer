@@ -11,6 +11,7 @@ namespace ET.Server
             List<StartZoneConfig> zoneConfigs = StartZoneConfigCategory.Instance.DataList;
             //所有Realm 都要配置成相同的Zone数据库哦！！！！！！！！
             DBComponent dbComponent = session.Root().GetComponent<DBManagerComponent>().GetZoneDB(session.Zone());
+            ZoneLoadComponent zoneStatusComponent = session.Root().GetComponent<ZoneLoadComponent>();
             foreach (StartZoneConfig zoneConfig in zoneConfigs)
             {
                 // 该区必须同时配置了Gate和Map才算可用,前提是一个服配置了一个Gate
@@ -52,7 +53,7 @@ namespace ET.Server
                 }
                 serverInfo.ServerDesc = zoneDesc.Length > 2 ? zoneDesc [2] : "";
                 serverInfo.Status = zoneStatus?.Status ?? 0;                      // 0 = 正常
-                serverInfo.Load = zoneStatus?.Load ?? 0;                          // 0 = 流畅
+                serverInfo.Load = zoneStatusComponent.GetLoad(zoneConfig.Id);   // 0 = 流畅
                 serverInfo.IsNewZone = zoneStatus?.IsNewZone ?? false;
                 serverInfo.RecommendWeight = zoneStatus?.RecommendWeight ?? 0;
                 serverInfo.OpenTime = zoneStatus?.OpenTime??0;
