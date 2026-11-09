@@ -166,7 +166,8 @@ namespace ET.Server
 				}
 			}
 
-			// 随机分配一个Gate  如果逻辑服都要至少一个Gate，这里是用ZoneId, 共享的话就用session.Zone()
+			//随机分配一个Gate  如果逻辑服都要至少一个Gate，这里是用ZoneId, 共享的话就用session.Zone()
+			//客户端也根据account的Hash索引Realm 所以account的分配的Realm跟Gate是固定的
 			StartSceneConfig config = RealmGateAddressHelper.GetGate(session.Zone(), request.Account);
 			Log.Debug($"gate address: {config}");
 			
