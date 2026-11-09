@@ -67,11 +67,6 @@ namespace ET.Server
             MessageSender messageSender = self.Root().GetComponent<MessageSender>();
             G2R_GetZoneLoad response = (G2R_GetZoneLoad)await messageSender.Call(
                 gateConfig.ActorId, R2G_GetZoneLoad.Create(), needException: false);
-
-            if (response.Error != ErrorCode.ERR_Success)
-            {
-                return;
-            }
             foreach (ZoneOnlineCount zoneOnlineCount in response.Zones)
             {
                 counts.TryGetValue(zoneOnlineCount.ZoneId, out int count);
