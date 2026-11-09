@@ -22,7 +22,7 @@ namespace ET.Server
         /// <summary>
         /// 常驻刷新循环：拉一轮 → 等 5s → 再拉，退出条件是组件被销毁。
         /// </summary>
-        public static async ETTask RefreshLoop(this ZoneLoadComponent self)
+        private static async ETTask RefreshLoop(this ZoneLoadComponent self)
         {
             TimerComponent timerComponent = self.Root().GetComponent<TimerComponent>();
             while (!self.IsDisposed)
