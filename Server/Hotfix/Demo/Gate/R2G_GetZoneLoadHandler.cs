@@ -4,7 +4,7 @@ namespace ET.Server
 {
     /// <summary>
     /// Realm 定时来拉本 Gate 的在线人数（回调），直接把整个字典回给它。
-    /// 一台 Gate 承载全部 Zone，所以一次响应里会带多条。
+    /// 一台 Gate 可承载多个区服，所以一次响应里会带多条。
     /// </summary>
     [MessageHandler(SceneType.Gate)]
     public class R2G_GetZoneLoadHandler : MessageHandler<Scene, R2G_GetZoneLoad, G2R_GetZoneLoad>

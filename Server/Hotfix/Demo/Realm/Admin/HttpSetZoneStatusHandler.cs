@@ -20,20 +20,20 @@ namespace ET.Server
                 return;
             }
             
-            if (string.IsNullOrEmpty(request.QueryString["zone"]))
+            if (string.IsNullOrEmpty(request.QueryString["zoneId"]))
             {
-                HttpHelper.Response(context, new { Error = 1, Message = "zone params are required" });
+                HttpHelper.Response(context, new { Error = 1, Message = "zoneId params are required" });
                 return;
             }
-            // 解析参数: /set_zone_status?zone=1&status=0
-            int zone = int.Parse(request.QueryString["zone"] ?? "0");
+            // 解析参数: /set_zone_status?zoneId=1&status=0
+            int zoneId = int.Parse(request.QueryString["zoneId"] ?? "0");
             int status = int.Parse(request.QueryString["status"] ?? "0");
             
             bool hasZone = StartZoneConfigCategory.Instance.DataList
-                    .Any(m => m.Id == zone);
+                    .Any(m => m.Id == zoneId);
             if (!hasZone)
             {
-                HttpHelper.Response(context, new { Error = 1, Message = "invalid zone" });
+                HttpHelper.Response(context, new { Error = 1, Message = "invalid zoneId" });
                 return;
             }
             
@@ -43,13 +43,13 @@ namespace ET.Server
                 return;
             }
 
-            using (await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Zone, zone))
+            using (await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Zone, zoneId))
             {
                 DBComponent dbComponent = scene.Root().GetComponent<DBManagerComponent>().GetZoneDB(scene.Zone());
-                ZoneStatus zoneStatus = await dbComponent.Query<ZoneStatus>(zone);
+                ZoneStatus zoneStatus = await dbComponent.Query<ZoneStatus>(zoneId);
                 if (zoneStatus == null)
                 {
-                    zoneStatus = scene.Root().AddChildWithId<ZoneStatus>(zone);
+                    zoneStatus = scene.Root().AddChildWithId<ZoneStatus>(zoneId);
                     zoneStatus.Status = status;
                     await dbComponent.Save(zoneStatus);
                     zoneStatus.Dispose();
@@ -61,7 +61,7 @@ namespace ET.Server
                 }
             }
 
-            HttpHelper.Response(context, new { Error = 0, Message = $"zone {zone} status set to {status}" });
+            HttpHelper.Response(context, new { Error = 0, Message = $"zoneId {zoneId} status set to {status}" });
             await ETTask.CompletedTask;
         }
     }

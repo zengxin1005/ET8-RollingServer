@@ -66,7 +66,7 @@ namespace ET.Server
 				return;
 			}
 			
-			// 4. 人数上限校验：该 Zone 在线人数超过单服承载就不再放人进来
+			// 4. 人数上限校验：该区服在线人数超过单服承载就不再放人进来
 			ZoneLoadComponent zoneStatusComponent = session.Root().GetComponent<ZoneLoadComponent>();
 			if (zoneStatusComponent != null && zoneStatusComponent.IsOverCapacity(zoneId))
 			{

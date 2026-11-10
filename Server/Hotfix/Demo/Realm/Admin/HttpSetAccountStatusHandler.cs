@@ -6,7 +6,7 @@ namespace ET.Server
     /// HTTP接口：修改玩家账号状态
     /// GET /set_player_status?account=xxx&status=2&banEndTime=0
     /// status: 0=正常, 1=封禁, 2=冻结
-    /// zone: 只限制某个服
+    /// zoneId: 只限制某个服
     /// banEndTime: 封禁结束时间戳(秒), 对status=2有效
     /// </summary>
     [HttpHandler(SceneType.Realm, "/set_account_status")]
@@ -42,14 +42,14 @@ namespace ET.Server
                 HttpHelper.Response(context, new { Error = 2, Message = "invalid status, must be 0/1/2" });
                 return;
             }
-            int zone = int.Parse(request.QueryString["zone"] ?? "0");
-            if (!string.IsNullOrEmpty(request.QueryString["zone"]))
+            int zoneId = int.Parse(request.QueryString["zoneId"] ?? "0");
+            if (!string.IsNullOrEmpty(request.QueryString["zoneId"]))
             {
                 bool hasZone = StartZoneConfigCategory.Instance.DataList
-                        .Any(m => m.Id == zone);
+                        .Any(m => m.Id == zoneId);
                 if (!hasZone)
                 {
-                    HttpHelper.Response(context, new { Error = 1, Message = "invalid zone" });
+                    HttpHelper.Response(context, new { Error = 1, Message = "invalid zoneId" });
                     return;
                 }
             }
@@ -67,7 +67,7 @@ namespace ET.Server
                     return;
                 }
 
-                if (string.IsNullOrEmpty(request.QueryString["zone"]))
+                if (string.IsNullOrEmpty(request.QueryString["zoneId"]))
                 {
                     accountInfo.Status = status;
                     if (accountInfo.Status == 1)
@@ -77,10 +77,10 @@ namespace ET.Server
                 }
                 else
                 {
-                    if (!accountInfo.ZoneBans.TryGetValue(zone, out ZoneBanInfo zoneBan))
+                    if (!accountInfo.ZoneBans.TryGetValue(zoneId, out ZoneBanInfo zoneBan))
                     {
                         zoneBan = new ZoneBanInfo();
-                        accountInfo.ZoneBans.Add(zone, zoneBan);
+                        accountInfo.ZoneBans.Add(zoneId, zoneBan);
                     }
 
                     zoneBan.Status = status;
@@ -96,15 +96,15 @@ namespace ET.Server
                     StartSceneConfig config = RealmGateAddressHelper.GetGate(scene.Zone(), account);
                     R2G_KickOutPlayer r2GKickOutPlayer = R2G_KickOutPlayer.Create();
                     r2GKickOutPlayer.Account = account;
-                    r2GKickOutPlayer.ZoneId = zone;
-                    if (string.IsNullOrEmpty(request.QueryString["zone"]))
+                    r2GKickOutPlayer.ZoneId = zoneId;
+                    if (string.IsNullOrEmpty(request.QueryString["zoneId"]))
                     {
                         if (accountInfo.Status == 1)
                         {
                             r2GKickOutPlayer.EndTime = accountInfo.BanEndTime;
                         }
                     }
-                    else if (accountInfo.ZoneBans.TryGetValue(zone, out ZoneBanInfo zoneBan))
+                    else if (accountInfo.ZoneBans.TryGetValue(zoneId, out ZoneBanInfo zoneBan))
                     {
                         if (zoneBan.Status == 1)
                         {

@@ -7,10 +7,10 @@ namespace ET.Server
     /// <summary>
     /// HTTP接口：管理IP白名单（按区服）
     /// 
-    /// 添加IP：    /set_zone_whitelist?action=add&zone=1&ip=127.0.0.1
-    /// 移除IP：    /set_zone_whitelist?action=remove&zone=1&ip=127.0.0.1
-    /// 清除单服：  /set_zone_whitelist?action=clear&zone=1&ip=127.0.0.1
-    /// 清除版本：  /set_zone_whitelist?action=clear&zone=1
+    /// 添加IP：    /set_zone_whitelist?action=add&zoneId=1&ip=127.0.0.1
+    /// 移除IP：    /set_zone_whitelist?action=remove&zoneId=1&ip=127.0.0.1
+    /// 清除单服：  /set_zone_whitelist?action=clear&zoneId=1&ip=127.0.0.1
+    /// 清除版本：  /set_zone_whitelist?action=clear&zoneId=1
     /// 清除所有：  /set_zone_whitelist?action=clear
     /// </summary>
     [HttpHandler(SceneType.Realm, "/set_zone_whitelist")]
@@ -29,15 +29,15 @@ namespace ET.Server
                 return;
             }
             string action = request.QueryString["action"] ?? "";
-            int zone = int.Parse(request.QueryString["zone"] ?? "0");
+            int zoneId = int.Parse(request.QueryString["zoneId"] ?? "0");
             string ip = request.QueryString["ip"] ?? "";
-            if (!string.IsNullOrEmpty(request.QueryString["zone"]) || !string.IsNullOrEmpty(ip))
+            if (!string.IsNullOrEmpty(request.QueryString["zoneId"]) || !string.IsNullOrEmpty(ip))
             {
                 bool hasZone = StartZoneConfigCategory.Instance.DataList
-                        .Any(m => m.Id == zone);
+                        .Any(m => m.Id == zoneId);
                 if (!hasZone)
                 {
-                    HttpHelper.Response(context, new { Error = 1, Message = "invalid zone" });
+                    HttpHelper.Response(context, new { Error = 1, Message = "invalid zoneId" });
                     return;
                 }
             }
@@ -68,17 +68,17 @@ namespace ET.Server
             switch (action.ToLower())
             {
                 case "add":
-                    if (string.IsNullOrEmpty(ip) ||string.IsNullOrEmpty(request.QueryString["zone"]))
+                    if (string.IsNullOrEmpty(ip) ||string.IsNullOrEmpty(request.QueryString["zoneId"]))
                     {
-                        HttpHelper.Response(context, new { Error = 2, Message = "zone and ip params are required" });
+                        HttpHelper.Response(context, new { Error = 2, Message = "zoneId and ip params are required" });
                         return;
                     }
-                    using (await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Zone, zone))
+                    using (await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Zone, zoneId))
                     {
-                        ZoneStatus zoneStatus = await dbComponent.Query<ZoneStatus>(zone);
+                        ZoneStatus zoneStatus = await dbComponent.Query<ZoneStatus>(zoneId);
                         if (zoneStatus == null)
                         {
-                            zoneStatus = scene.Root().AddChildWithId<ZoneStatus>(zone);
+                            zoneStatus = scene.Root().AddChildWithId<ZoneStatus>(zoneId);
                             zoneStatus.LoginWhiteIpList.Add(ip);
                             await dbComponent.Save(zoneStatus);
                             zoneStatus.Dispose();
@@ -92,21 +92,21 @@ namespace ET.Server
                     HttpHelper.Response(context, new
                     {
                         Error = 0,
-                        Message = $"ip {ip} added to zone {zone} whitelist",
-                        Zone = zone,
+                        Message = $"ip {ip} added to zoneId {zoneId} whitelist",
+                        ZoneId = zoneId,
                         IP = ip
                     });
                     break;
 
                 case "remove":
-                    if (string.IsNullOrEmpty(ip) || string.IsNullOrEmpty(request.QueryString["zone"]))
+                    if (string.IsNullOrEmpty(ip) || string.IsNullOrEmpty(request.QueryString["zoneId"]))
                     {
-                        HttpHelper.Response(context, new { Error = 2, Message = "zone and ip params are required" });
+                        HttpHelper.Response(context, new { Error = 2, Message = "zoneId and ip params are required" });
                         return;
                     }
-                    using (await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Zone, zone))
+                    using (await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Zone, zoneId))
                     {
-                        ZoneStatus zoneStatus = await dbComponent.Query<ZoneStatus>(zone);
+                        ZoneStatus zoneStatus = await dbComponent.Query<ZoneStatus>(zoneId);
                         if (zoneStatus != null)
                         {
                             zoneStatus.LoginWhiteIpList.Remove(ip);
@@ -116,18 +116,18 @@ namespace ET.Server
                     HttpHelper.Response(context, new
                     {
                         Error = 0,
-                        Message = $"ip {ip} removed from zone {zone} whitelist",
-                        Zone = zone,
+                        Message = $"ip {ip} removed from zoneId {zoneId} whitelist",
+                        ZoneId = zoneId,
                         IP = ip
                     });
                     break;
 
                 case "clear":
-                    if (!string.IsNullOrEmpty(request.QueryString["zone"]))
+                    if (!string.IsNullOrEmpty(request.QueryString["zoneId"]))
                     {
-                        using (await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Zone, zone))
+                        using (await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Zone, zoneId))
                         {
-                            ZoneStatus zoneStatus = await dbComponent.Query<ZoneStatus>(zone);
+                            ZoneStatus zoneStatus = await dbComponent.Query<ZoneStatus>(zoneId);
                             if (zoneStatus != null)
                             {
                                 zoneStatus.LoginWhiteIpList.Clear();
@@ -137,8 +137,8 @@ namespace ET.Server
                         HttpHelper.Response(context, new
                         {
                             Error = 0,
-                            Message = $"zone {zone} whitelist cleared",
-                            Zone = zone
+                            Message = $"zoneId {zoneId} whitelist cleared",
+                            ZoneId = zoneId
                         });
                     }
                     else

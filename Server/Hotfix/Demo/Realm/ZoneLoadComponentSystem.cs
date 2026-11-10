@@ -39,7 +39,7 @@ namespace ET.Server
         }
 
         /// <summary>
-        /// 拉一轮：并发问所有 Gate，把各 Gate 报的 zone→人数 累加，然后**整体替换**缓存。
+        /// 拉一轮：并发问所有 Gate，把各 Gate 报的 zoneId→人数 累加，然后**整体替换**缓存。
         /// </summary>
         private static async ETTask Refresh(this ZoneLoadComponent self)
         {
@@ -75,7 +75,7 @@ namespace ET.Server
         }
 
         /// <summary>
-        /// 取某 Zone 的实时负载档位：0=流畅，1=繁忙，2=爆满。
+        /// 取某区服的实时负载档位：0=流畅，1=繁忙，2=爆满。
         /// 没拉到数据（Gate 还没起）按 0 处理，不让选服列表因为"暂时没人报"就显示爆满。
         /// </summary>
         public static int GetLoad(this ZoneLoadComponent self, int zoneId)
@@ -88,7 +88,7 @@ namespace ET.Server
             return playerCount < ZoneLoadComponent.BusyMax? 1 : 2;
         }
 
-        /// <summary>取某 Zone 的全集群在线人数（多台 Gate 累加后）。没有数据 = 0。</summary>
+        /// <summary>取某区服的全集群在线人数（多台 Gate 累加后）。没有数据 = 0。</summary>
         private static int GetOnlineCount(this ZoneLoadComponent self, int zoneId)
         {
             return self.OnlineCounts.GetValueOrDefault(zoneId);

@@ -28,8 +28,8 @@ namespace ET.Server
         public const int BusyMax = 2400;
 
         /// <summary>
-        /// zoneId → 该 Zone 全集群在线人数（多台 Gate 累加后）。
-        /// 一个 Zone 可能被多台 Gate 同时承载（Realm 按账号 hash 分流），Realm 侧累加成一份。
+        /// zoneId → 该区服全集群在线人数（多台 Gate 累加后）。
+        /// 一个区服可能被多台 Gate 同时承载（Realm 按账号 hash 分流），Realm 侧累加成一份。
         /// </summary>
         public Dictionary<int, int> OnlineCounts { get; set; } = new();
     }
